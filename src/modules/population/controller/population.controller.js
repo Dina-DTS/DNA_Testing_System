@@ -6,128 +6,128 @@ dotenv.config()
 
 const encryptionKey = process.env.ENCRYPTION_KEY;
 
-//------------------------- add population -------------------------
+// ------------------------- add population -------------------------
 
-// export const addPopulation = async (req, res, next) => {
-//     const { DNA_sequence, name, address, national_id, phone, gender, birthdate, bloodType, status, description } = req.body;
-
-//     // Array to store error messages
-//     const errorMessages = [];
-
-//     // Retrieve all existing entries with a non-null DNA sequence
-//     const existingEntries = await populationModel.find({ DNA_sequence: { $ne: null, $exists: true } });
-
-//     // Check if any existing DNA sequence matches the entered DNA sequence
-//     const isDuplicateDNA = existingEntries.some(existingEntry => {
-//         const decryptedSequence = CryptoJS.AES.decrypt(existingEntry.DNA_sequence, encryptionKey).toString(CryptoJS.enc.Utf8);
-//         return decryptedSequence === DNA_sequence;
-//     });
-
-//     if (isDuplicateDNA) {
-//         errorMessages.push('DNA sequence already exists in the database');
-//     }
-
-//     if (national_id) {
-//         const existingPopulationNational_id = await populationModel.findOne({ national_id });
-//         if (existingPopulationNational_id) {
-//             errorMessages.push('This National ID already exists in the database');
-//         }
-//     }
-
-//     if (phone) {
-//         const existingPopulationPhone = await populationModel.findOne({ phone });
-//         if (existingPopulationPhone) {
-//             errorMessages.push('This phone number already exists in the database');
-//         }
-//     }
-
-//     // If there are any error messages, return them
-//     if (errorMessages.length > 0) {
-//         return next(new AppError(errorMessages, 409));
-//     }
-
-//     // Encrypt the DNA sequence before storing
-//     const encryptedSequence = CryptoJS.AES.encrypt(DNA_sequence, encryptionKey).toString();
-
-//     // Create a new population entry
-//     const populationEntry = new populationModel({
-//         lab_id: req.user.lab_id,
-//         technical_id: req.user.id,
-//         DNA_sequence: encryptedSequence,
-//         name,
-//         address,
-//         national_id,
-//         phone,
-//         gender,
-//         birthdate,
-//         bloodType,
-//         status,
-//         description
-//     });
-
-//     // Save the new population entry to the database
-//     const savedEntry = await populationEntry.save();
-
-//     // Respond with the saved entry
-//     res.status(201).json({ message: 'Population entry added successfully', person: savedEntry });
-// };
 export const addPopulation = async (req, res, next) => {
-  const { DNA_sequence, name, address, national_id, phone, gender, birthdate, bloodType, status, description } = req.body;
+    const { DNA_sequence, name, address, national_id, phone, gender, birthdate, bloodType, status, description } = req.body;
 
-  // Array to store error messages
-  const errorMessages = [];
+    // Array to store error messages
+    const errorMessages = [];
 
-  // Retrieve all existing entries with a non-null DNA sequence
-  const existingEntries = await populationModel.find({ DNA_sequence: { $ne: null, $exists: true } });
+    // Retrieve all existing entries with a non-null DNA sequence
+    const existingEntries = await populationModel.find({ DNA_sequence: { $ne: null, $exists: true } });
 
-  // Check if any existing DNA sequence matches the entered DNA sequence
-  const isDuplicateDNA = existingEntries.some(existingEntry => existingEntry.DNA_sequence === DNA_sequence);
+    // Check if any existing DNA sequence matches the entered DNA sequence
+    const isDuplicateDNA = existingEntries.some(existingEntry => {
+        const decryptedSequence = CryptoJS.AES.decrypt(existingEntry.DNA_sequence, encryptionKey).toString(CryptoJS.enc.Utf8);
+        return decryptedSequence === DNA_sequence;
+    });
 
-  if (isDuplicateDNA) {
-      errorMessages.push('DNA sequence already exists in the database');
-  }
+    if (isDuplicateDNA) {
+        errorMessages.push('DNA sequence already exists in the database');
+    }
 
-  if (national_id) {
-      const existingPopulationNational_id = await populationModel.findOne({ national_id });
-      if (existingPopulationNational_id) {
-          errorMessages.push('This National ID already exists in the database');
-      }
-  }
+    if (national_id) {
+        const existingPopulationNational_id = await populationModel.findOne({ national_id });
+        if (existingPopulationNational_id) {
+            errorMessages.push('This National ID already exists in the database');
+        }
+    }
 
-  if (phone) {
-      const existingPopulationPhone = await populationModel.findOne({ phone });
-      if (existingPopulationPhone) {
-          errorMessages.push('This phone number already exists in the database');
-      }
-  }
+    if (phone) {
+        const existingPopulationPhone = await populationModel.findOne({ phone });
+        if (existingPopulationPhone) {
+            errorMessages.push('This phone number already exists in the database');
+        }
+    }
 
-  // If there are any error messages, return them
-  if (errorMessages.length > 0) {
-      return next(new AppError(errorMessages, 409));
-  }
+    // If there are any error messages, return them
+    if (errorMessages.length > 0) {
+        return next(new AppError(errorMessages, 409));
+    }
 
-  // Create a new population entry
-  const populationEntry = new populationModel({
-      lab_id: req.user.lab_id,
-      technical_id: req.user.id,
-      DNA_sequence,
-      name,
-      address,
-      national_id,
-      phone,
-      gender,
-      birthdate,
-      bloodType,
-      status,
-      description
-  });
+    // Encrypt the DNA sequence before storing
+    const encryptedSequence = CryptoJS.AES.encrypt(DNA_sequence, encryptionKey).toString();
 
-  // Save the new population entry to the database
-  const savedEntry = await populationEntry.save();
+    // Create a new population entry
+    const populationEntry = new populationModel({
+        lab_id: req.user.lab_id,
+        technical_id: req.user.id,
+        DNA_sequence: encryptedSequence,
+        name,
+        address,
+        national_id,
+        phone,
+        gender,
+        birthdate,
+        bloodType,
+        status,
+        description
+    });
 
-  // Respond with the saved entry
-  res.status(201).json({ message: 'Population entry added successfully', person: savedEntry });
+    // Save the new population entry to the database
+    const savedEntry = await populationEntry.save();
+
+    // Respond with the saved entry
+    res.status(201).json({ message: 'Population entry added successfully', person: savedEntry });
 };
+// export const addPopulation = async (req, res, next) => {
+//   const { DNA_sequence, name, address, national_id, phone, gender, birthdate, bloodType, status, description } = req.body;
+
+//   // Array to store error messages
+//   const errorMessages = [];
+
+//   // Retrieve all existing entries with a non-null DNA sequence
+//   const existingEntries = await populationModel.find({ DNA_sequence: { $ne: null, $exists: true } });
+
+//   // Check if any existing DNA sequence matches the entered DNA sequence
+//   const isDuplicateDNA = existingEntries.some(existingEntry => existingEntry.DNA_sequence === DNA_sequence);
+
+//   if (isDuplicateDNA) {
+//       errorMessages.push('DNA sequence already exists in the database');
+//   }
+
+//   if (national_id) {
+//       const existingPopulationNational_id = await populationModel.findOne({ national_id });
+//       if (existingPopulationNational_id) {
+//           errorMessages.push('This National ID already exists in the database');
+//       }
+//   }
+
+//   if (phone) {
+//       const existingPopulationPhone = await populationModel.findOne({ phone });
+//       if (existingPopulationPhone) {
+//           errorMessages.push('This phone number already exists in the database');
+//       }
+//   }
+
+//   // If there are any error messages, return them
+//   if (errorMessages.length > 0) {
+//       return next(new AppError(errorMessages, 409));
+//   }
+
+//   // Create a new population entry
+//   const populationEntry = new populationModel({
+//       lab_id: req.user.lab_id,
+//       technical_id: req.user.id,
+//       DNA_sequence,
+//       name,
+//       address,
+//       national_id,
+//       phone,
+//       gender,
+//       birthdate,
+//       bloodType,
+//       status,
+//       description
+//   });
+
+//   // Save the new population entry to the database
+//   const savedEntry = await populationEntry.save();
+
+//   // Respond with the saved entry
+//   res.status(201).json({ message: 'Population entry added successfully', person: savedEntry });
+// };
 
 
 //---------------------------------- get all population -----------------------------
