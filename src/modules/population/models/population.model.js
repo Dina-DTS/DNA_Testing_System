@@ -40,6 +40,7 @@ const populationSchema = new mongoose.Schema({
   },
   bloodType: {
     type: String,
+    enum: ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'],
   },
   status: {
     type: String, 
