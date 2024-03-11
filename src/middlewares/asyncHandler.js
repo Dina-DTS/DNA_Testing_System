@@ -13,7 +13,6 @@ export const globalErrorHandling=(err, req, res, next)=>{
         const { message, statusCode, stack } = err
         res.status(statusCode || 500).json({
             message,
-            statusCode,
             ...(process.env.MODE === 'development'),
         }) 
 }
