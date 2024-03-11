@@ -9,7 +9,7 @@ export const AddPopulationSchema = Joi.object({
     phone: Joi.string().trim().regex(/^(010|011|012|015)[0-9]{8}$/).trim(),
     gender: Joi.string().trim().valid('male', 'female').lowercase(),
     birthdate: Joi.date(),
-    bloodType: Joi.string().trim(),
+    bloodType: Joi.string().valid('A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-').trim(),
     status: Joi.string().valid('crime', 'disaster', 'missing', 'acknowledged').required().lowercase(),
     description: Joi.string().trim().required().max(1000).lowercase(),
 },
