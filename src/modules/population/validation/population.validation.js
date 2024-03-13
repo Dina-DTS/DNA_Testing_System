@@ -38,6 +38,7 @@ export const AddPopulationSchema = Joi.object({
   
   
   export const updatePopulationQuery=Joi.object({});
-  
 
- 
+
+
+  

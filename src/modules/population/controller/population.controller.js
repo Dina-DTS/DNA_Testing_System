@@ -299,4 +299,4 @@ export const updatePopulation = async (req, res, next) => {
   
     return res.status(200).json({ message: "Population record updated successfully", updated });
   };
-  
+ 

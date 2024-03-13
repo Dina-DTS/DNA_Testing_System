@@ -14,4 +14,5 @@ router.post('/identificationByDNA',authenticate,autherize('admin','technical'),a
 router.put('/updatePopulation/:id',authenticate,autherize('admin'),validate(updatePopulationSchema,updatePopulationQuery),asyncHandler(updatePopulation))
 
 
+
 export default router
