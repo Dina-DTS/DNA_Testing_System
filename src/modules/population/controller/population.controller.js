@@ -129,7 +129,7 @@ export const addPopulation = async (req, res, next) => {
   const savedEntry = await populationEntry.save();
 
   // Respond with the saved entry
-  res.status(201).json({ message: 'Population entry added successfully',statusCode:0, person: savedEntry });
+  res.status(201).json({ message: 'Population entry added successfully', person: savedEntry });
 };
 
 
@@ -145,7 +145,7 @@ export const addPopulation = async (req, res, next) => {
 let population = await populationModel.find().skip(skip).limit(limit).select('-__v');
 
      if(!population||population.length==0) return next(new AppError('No population found',404))
-     return res.status(200).json({message:"Population fetched successfully",statusCode:0,population})
+     return res.status(200).json({message:"Population fetched successfully",population})
  } 
 
 //--------------------------------- search for population ---------------------------
@@ -181,7 +181,7 @@ export const identification = async (req, res, next) => {
         return next(new AppError("No population found matching your search criteria", 404));
     }
 
-    return res.status(200).json({ message: "Population fetched successfully",statusCode:0, population });
+    return res.status(200).json({ message: "Population fetched successfully", population });
 };
 
 //--------------------------------- identification by DNA ---------------------------
@@ -215,7 +215,7 @@ export const identificationByDNA = async (req, res, next) => {
   } else if (role === "technical") {
     // Technical role excludes lab_id, technical_id, and DNA_sequence
     const { lab_id, technical_id, DNA_sequence, ...personData } = duplicateEntry.toObject();
-    return res.status(200).json({ message: "Population fetched successfully",statusCode:0, personData });
+    return res.status(200).json({ message: "Population fetched successfully", personData });
   } else {
     // Other roles don't have access
     return next(new AppError("You don't have permission to access this data", 403));
@@ -297,6 +297,6 @@ export const updatePopulation = async (req, res, next) => {
       return next(new AppError(`Person with the provided ID isn't found`, 404));
     }
   
-    return res.status(200).json({ message: "Population record updated successfully",statusCode:0, updated });
+    return res.status(200).json({ message: "Population record updated successfully", updated });
   };
   
