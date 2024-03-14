@@ -2,6 +2,8 @@ import CryptoJS from "crypto-js";
 import { AppError } from "../../../../utilies/error.handler.js";
 import populationModel from "../models/population.model.js";
 import dotenv from "dotenv"
+import fs from "fs"
+import multer from 'multer'
 dotenv.config()
 
 const encryptionKey = process.env.ENCRYPTION_KEY;
@@ -129,10 +131,61 @@ export const addPopulation = async (req, res, next) => {
   const savedEntry = await populationEntry.save();
 
   // Respond with the saved entry
-  res.status(201).json({ message: 'Population entry added successfully', person: savedEntry });
+  res.status(201).json({ message: 'Population entry added successfully',statusCode:201, person: savedEntry });
 };
 
+///////////////////////////////////file upload///////////////////////////////
 
+// // src/modules/controller/populationController.js
+
+// export const addPopulation = async (req, res, next) => {
+//   try {
+//     const { name, address, national_id, phone, gender, birthdate, bloodType, status, description } = req.body;
+
+//     // Check if the file is uploaded
+//     if (!req.file) {
+//       return next(new AppError('No file uploaded', 400));
+//     }
+
+//     // Extract the content from the uploaded file
+//     const { buffer } = req.file;
+//     const DNA_sequence = buffer.toString(); // Assuming the file content is a string
+
+//     // Your existing logic to validate and save the population entry
+//     // Here you can use DNA_sequence obtained from the file content
+
+//     // Create a new population entry
+//     const populationEntry = new populationModel({
+//       lab_id: req.user.lab_id,
+//       technical_id: req.user.id,
+//       DNA_sequence,
+//       name,
+//       address,
+//       national_id,
+//       phone,
+//       gender,
+//       birthdate,
+//       bloodType,
+//       status,
+//       description
+//     });
+
+//     // Save the new population entry to the database
+//     const savedEntry = await populationEntry.save();
+
+//     // Respond with the saved entry
+//     res.status(201).json({ message: 'Population entry added successfully', person: savedEntry });
+//   } catch (error) {
+//     if (error.code === 11000 && error.keyPattern && error.keyPattern.DNA_sequence) {
+//       // Handle duplicate key error for DNA_sequence
+//       return next(new AppError('DNA sequence already exists in the database', 409));
+//     } else {
+//       // Handle other errors
+//       return next(error);
+//     }
+//   }
+// };
+   
 //---------------------------------- get all population -----------------------------
 
  export const getAllPopulation=async(req,res,next)=>{
@@ -145,7 +198,7 @@ export const addPopulation = async (req, res, next) => {
 let population = await populationModel.find().skip(skip).limit(limit).select('-__v');
 
      if(!population||population.length==0) return next(new AppError('No population found',404))
-     return res.status(200).json({message:"Population fetched successfully",population})
+     return res.status(200).json({message:"Population fetched successfully",statusCode:200, population})
  } 
 
 //--------------------------------- search for population ---------------------------
@@ -181,7 +234,7 @@ export const identification = async (req, res, next) => {
         return next(new AppError("No population found matching your search criteria", 404));
     }
 
-    return res.status(200).json({ message: "Population fetched successfully", population });
+    return res.status(200).json({ message: "Population fetched successfully",statusCode:200,  population });
 };
 
 //--------------------------------- identification by DNA ---------------------------
@@ -215,7 +268,7 @@ export const identificationByDNA = async (req, res, next) => {
   } else if (role === "technical") {
     // Technical role excludes lab_id, technical_id, and DNA_sequence
     const { lab_id, technical_id, DNA_sequence, ...personData } = duplicateEntry.toObject();
-    return res.status(200).json({ message: "Population fetched successfully", personData });
+    return res.status(200).json({ message: "Population fetched successfully",statusCode:200,  personData });
   } else {
     // Other roles don't have access
     return next(new AppError("You don't have permission to access this data", 403));
@@ -239,10 +292,7 @@ export const updatePopulation = async (req, res, next) => {
       errorMessages.push("Person with the provided ID is not found");
     }
   
-    // If there are any error messages, return them
-    if (errorMessages.length > 0) {
-      return next(new AppError(errorMessages.join(', '), 404));
-    }
+    
   
     if (national_id && national_id !== person.national_id) {
       let existingNationalID = await populationModel.findOne({ national_id });
@@ -297,6 +347,6 @@ export const updatePopulation = async (req, res, next) => {
       return next(new AppError(`Person with the provided ID isn't found`, 404));
     }
   
-    return res.status(200).json({ message: "Population record updated successfully", updated });
+    return res.status(200).json({ message: "Population record updated successfully",statusCode:200,  updated });
   };
   
