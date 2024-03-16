@@ -18,6 +18,4 @@ router.put('/updatePopulation/:id',authenticate,autherize('admin'),getTextFileUp
 router.post('/identificationByDNA',authenticate,autherize('admin','technical'),getTextFileUploadMiddleware(),asyncHandler(identificationByDNA))
 
 
-
-
 export default router
