@@ -2,8 +2,6 @@ export const validate = (Bodyschema, QuerySchema) => {
   return (req, res, next) => {
     const { error: BodyError } = Bodyschema?.validate({
       body: req.body,
-      ...(req.file && { file: req.file }),
-      ...(req.files ? { files: req.files } : null),
     }, {
       abortEarly: false,
     });

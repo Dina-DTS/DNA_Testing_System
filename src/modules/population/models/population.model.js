@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 
-
 // Define the Population Schema
 const populationSchema = new mongoose.Schema({
   lab_id: {
@@ -30,7 +29,6 @@ const populationSchema = new mongoose.Schema({
   },
   phone: {
     type: String,
-    unique:true
   },
   gender: {
     type: String,
@@ -56,8 +54,6 @@ const populationSchema = new mongoose.Schema({
 
 // Create a model from the schema
 const populationModel = mongoose.model('population', populationSchema);
-
-// populationModel.collection.createIndex({ DNA_sequence: 1 }, { unique: true })
    
 // Export the Population model
 export default populationModel
