@@ -1,7 +1,7 @@
 import Joi from "joi";
 export const AddPopulationSchema = Joi.object({
   body: {
-    DNA_sequence:Joi.string(),
+    DNA_sequence: Joi.string().trim().required(),
     name: Joi.string().trim().max(30).lowercase(),
     address: Joi.string().trim().max(255).lowercase(),
     national_id: Joi.string()
@@ -10,7 +10,8 @@ export const AddPopulationSchema = Joi.object({
       .message("National ID must be a 14-digit number"),
     phone: Joi.string()
       .trim()
-      .regex(/^(010|011|012|015)[0-9]{8}$/),
+      .regex(/^(010|011|012|015)[0-9]{8}$/)
+      .trim(),
     gender: Joi.string().trim().valid("male", "female").lowercase(),
     birthdate: Joi.date(),
     bloodType: Joi.string()
@@ -63,30 +64,30 @@ export const updatePopulationQuery = Joi.object({});
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// export const AddPopulationnSchema = Joi.object({
-//   body: {
-//     DNA_sequence:Joi.string(),
-//     name: Joi.string().trim().max(30).lowercase(),
-//     address: Joi.string().trim().max(255).lowercase(),
-//     national_id: Joi.string()
-//       .trim()
-//       .pattern(/^[0-9]{14}$/)
-//       .message("National ID must be a 14-digit number"),
-//     phone: Joi.string()
-//       .trim()
-//       .regex(/^(010|011|012|015)[0-9]{8}$/),
-//     gender: Joi.string().trim().valid("male", "female").lowercase(),
-//     birthdate: Joi.date(),
-//     bloodType: Joi.string()
-//       .valid("A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-")
-//       .trim(),
-//     status: Joi.string()
-//       .valid("crime", "disaster", "missing", "acknowledged")
-//       .required()
-//       .lowercase(),
-//     description: Joi.string().trim().required().max(1000).lowercase(),
-//   },
-//   params: {},
-// });
+export const AddPopulationnSchema = Joi.object({
+  body: {
+    DNA_sequence:Joi.string(),
+    name: Joi.string().trim().max(30).lowercase(),
+    address: Joi.string().trim().max(255).lowercase(),
+    national_id: Joi.string()
+      .trim()
+      .pattern(/^[0-9]{14}$/)
+      .message("National ID must be a 14-digit number"),
+    phone: Joi.string()
+      .trim()
+      .regex(/^(010|011|012|015)[0-9]{8}$/),
+    gender: Joi.string().trim().valid("male", "female").lowercase(),
+    birthdate: Joi.date(),
+    bloodType: Joi.string()
+      .valid("A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-")
+      .trim(),
+    status: Joi.string()
+      .valid("crime", "disaster", "missing", "acknowledged")
+      .required()
+      .lowercase(),
+    description: Joi.string().trim().required().max(1000).lowercase(),
+  },
+  params: {},
+});
 
-// export const AddPopulationnlQuery = Joi.object({});
+export const AddPopulationnlQuery = Joi.object({});

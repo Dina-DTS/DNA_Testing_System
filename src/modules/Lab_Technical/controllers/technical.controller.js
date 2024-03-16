@@ -227,7 +227,6 @@ export const signInTechnical = asyncHandler(async (req, res) => {
 
   return res.status(200).json({
     message: 'Sign in successfully',
-    statusCode:200, 
     token,
     technical:technicalPersonnel
   });

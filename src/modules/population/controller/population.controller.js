@@ -5,96 +5,8 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const encryptionKey = process.env.ENCRYPTION_KEY;
-////////////////////////add population with encryption and file upload//////////////////////////
-export const addPopulation = async (req, res, next) => {
-  const {
-    name,
-    address,
-    national_id,
-    phone,
-    gender,
-    birthdate,
-    bloodType,
-    status,
-    description,
-  } = req.body;
 
-  // Array to store error messages
-  const errorMessages = [];
-
-  // Retrieve all existing entries with a non-null DNA sequence
-  const existingEntries = await populationModel.find({
-    DNA_sequence: { $ne: null, $exists: true },
-  });
-
-  // Check if any existing DNA sequence matches the entered DNA sequence
-  const isDuplicateDNA = existingEntries.some((existingEntry) => {
-    const decryptedSequence = CryptoJS.AES.decrypt(existingEntry.DNA_sequence, encryptionKey).toString(CryptoJS.enc.Utf8);
-    return decryptedSequence === req.body.DNA_sequence;
-  });
-
-  if (isDuplicateDNA) {
-    errorMessages.push("DNA sequence already exists in the database");
-  }
-
-  if (national_id) {
-    const existingPopulationNational_id = await populationModel.findOne({
-      national_id,
-    });
-    if (existingPopulationNational_id) {
-      errorMessages.push("This National ID already exists in the database");
-    }
-  }
-
-  if (phone !== undefined && phone !== null) {
-    const existingPopulationPhone = await populationModel.findOne({ phone });
-    if (existingPopulationPhone) {
-      errorMessages.push("This phone number already exists in the database");
-    }
-  }
-
-  // If there are any error messages, return them
-  if (errorMessages.length > 0) {
-    return res.status(409).json({ message: errorMessages });
-  }
-
-  // Encrypt the DNA sequence before storing
-  const encryptedSequence = CryptoJS.AES.encrypt(req.body.DNA_sequence, encryptionKey).toString();
-
-  // Create a new population entry
-  const populationEntry = new populationModel({
-    lab_id: req.user.lab_id,
-    technical_id: req.user.id,
-    DNA_sequence: encryptedSequence,
-    name,
-    address,
-    national_id,
-    phone,
-    gender,
-    birthdate,
-    bloodType,
-    status,
-    description,
-  });
-
-  try {
-    // Save the new population entry to the database
-    const savedEntry = await populationEntry.save();
-
-    // Respond with the saved entry
-    res
-      .status(201)
-      .json({
-        message: "Population entry added successfully",
-        statusCode:201, 
-        person: savedEntry,
-      });
-  } catch (error) {
-    next(error);
-  }
-};
-
-//-------------------------old add population without file upload-------------------------
+//------------------------- add population -------------------------
 
 // export const addPopulation = async (req, res, next) => {
 //     const { DNA_sequence, name, address, national_id, phone, gender, birthdate, bloodType, status, description } = req.body;
@@ -159,96 +71,8 @@ export const addPopulation = async (req, res, next) => {
 //     // Respond with the saved entry
 //     res.status(201).json({ message: 'Population entry added successfully', person: savedEntry });
 // };
-///////////////////////// add population without encryption and with file upload ///////////////////
 
-// export const addPopulationn = async (req, res, next) => {
-//   const {
-//     name,
-//     address,
-//     national_id,
-//     phone,
-//     gender,
-//     birthdate,
-//     bloodType,
-//     status,
-//     description,
-//   } = req.body;
-
-//   // Array to store error messages
-//   const errorMessages = [];
-
-// // // Extract DNA_sequence from the uploaded file
-// // const DNA_sequence = req.file.buffer.toString('utf8');
-
-//   // Retrieve all existing entries with a non-null DNA sequence
-//   const existingEntries = await populationModel.find({
-//     DNA_sequence: { $ne: null, $exists: true },
-//   });
-
-//   // Check if any existing DNA sequence matches the entered DNA sequence
-//   const isDuplicateDNA = existingEntries.some(
-//     (existingEntry) => existingEntry.DNA_sequence === req.body.DNA_sequence
-//   );
-
-//   if (isDuplicateDNA) {
-//     errorMessages.push("DNA sequence already exists in the database");
-//   }
-
-//   if (national_id) {
-//     const existingPopulationNational_id = await populationModel.findOne({
-//       national_id,
-//     });
-//     if (existingPopulationNational_id) {
-//       errorMessages.push("This National ID already exists in the database");
-//     }
-//   }
-
-//   if (phone) {
-//     const existingPopulationPhone = await populationModel.findOne({ phone });
-//     if (existingPopulationPhone) {
-//       errorMessages.push("This phone number already exists in the database");
-//     }
-//   }
-
-//   // If there are any error messages, return them
-//   if (errorMessages.length > 0) {
-//     return res.status(409).json({ message: errorMessages });
-//   }
-
-//   const encryptedSequence = CryptoJS.AES.encrypt(req.body.DNA_sequence, encryptionKey).toString();
-//   // Create a new population entry
-//   const populationEntry = new populationModel({
-//     lab_id: req.user.lab_id,
-//     technical_id: req.user.id,
-//     DNA_sequence:encryptedSequence,
-//     name,
-//     address,
-//     national_id,
-//     phone,
-//     gender,
-//     birthdate,
-//     bloodType,
-//     status,
-//     description,
-//   });
-
-//   try {
-//     // Save the new population entry to the database
-//     const savedEntry = await populationEntry.save();
-
-//     // Respond with the saved entry
-//     res
-//       .status(201)
-//       .json({
-//         message: "Population entry added successfully",
-//         person: savedEntry,
-//       });
-//   } catch (error) {
-//     next(error);
-//   }
-// };
-
-///////////////////////////////////// add population without encryption  /////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
 // export const addPopulation = async (req, res, next) => {
 //   const {
 //     DNA_sequence,
@@ -410,60 +234,7 @@ export const identification = async (req, res, next) => {
     .json({ message: "Population fetched successfully",statusCode:200, population });
 };
 
-///////////////////////////identification by dna with encryption and file upload/////////////
-
-export const identificationByDNA = async (req, res, next) => {
-  const { DNA_sequence } = req.body;
-
-  if (!DNA_sequence) {
-    return next(
-      new AppError("Please provide DNA sequence to be searched for", 404)
-    );
-  }
-
-  const existingEntries = await populationModel
-    .find({ DNA_sequence: { $ne: null, $exists: true } })
-    .select("-__v");
-
-  // Check if any existing DNA sequence matches the entered DNA sequence
-  const duplicateEntry = existingEntries.find((existingEntry) => {
-    const decryptedSequence = CryptoJS.AES.decrypt(
-      existingEntry.DNA_sequence,
-      encryptionKey
-    ).toString(CryptoJS.enc.Utf8);
-    return decryptedSequence === DNA_sequence;
-  });
-
-  if (!duplicateEntry) {
-    return next(
-      new AppError("No population found matching your search criteria", 404)
-    );
-  }
-
-  // Assuming role information is accessible via req.user.role
-  const { role } = req.user;
-
-  if (role === "admin") {
-    // Admin can access all data
-    const { DNA_sequence, ...personData } = duplicateEntry.toObject();
-    return res
-      .status(200)
-      .json({ message: "Population fetched successfully",statusCode:200, personData });
-  } else if (role === "technical") {
-    // Technical role excludes lab_id, technical_id, and DNA_sequence
-    const { lab_id, technical_id, DNA_sequence, ...personData } =
-      duplicateEntry.toObject();
-    return res
-      .status(200)
-      .json({ message: "Population fetched successfully",statusCode:200, personData });
-  } else {
-    // Other roles don't have access
-    return next(
-      new AppError("You don't have permission to access this data", 403)
-    );
-  }
-};
-//--------------------------------- identification by DNA without file upload---------------------------
+//--------------------------------- identification by DNA ---------------------------
 
 // export const identificationByDNA = async (req, res, next) => {
 //   const { DNA_sequence } = req.body;
@@ -516,7 +287,7 @@ export const identificationByDNA = async (req, res, next) => {
 //     );
 //   }
 // };
-//-------------------------------- update population without file upload ------------------------------
+//-------------------------------- update population ------------------------------
 
 // export const updatePopulation = async (req, res, next) => {
 //   const {
@@ -640,9 +411,188 @@ export const identificationByDNA = async (req, res, next) => {
 //     .status(200)
 //     .json({ message: "Population record updated successfully", updated });
 // };
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
+
+
+
+// export const addPopulationn = async (req, res, next) => {
+//   const {
+//     name,
+//     address,
+//     national_id,
+//     phone,
+//     gender,
+//     birthdate,
+//     bloodType,
+//     status,
+//     description,
+//   } = req.body;
+
+//   // Array to store error messages
+//   const errorMessages = [];
+
+// // // Extract DNA_sequence from the uploaded file
+// // const DNA_sequence = req.file.buffer.toString('utf8');
+
+//   // Retrieve all existing entries with a non-null DNA sequence
+//   const existingEntries = await populationModel.find({
+//     DNA_sequence: { $ne: null, $exists: true },
+//   });
+
+//   // Check if any existing DNA sequence matches the entered DNA sequence
+//   const isDuplicateDNA = existingEntries.some(
+//     (existingEntry) => existingEntry.DNA_sequence === req.body.DNA_sequence
+//   );
+
+//   if (isDuplicateDNA) {
+//     errorMessages.push("DNA sequence already exists in the database");
+//   }
+
+//   if (national_id) {
+//     const existingPopulationNational_id = await populationModel.findOne({
+//       national_id,
+//     });
+//     if (existingPopulationNational_id) {
+//       errorMessages.push("This National ID already exists in the database");
+//     }
+//   }
+
+//   if (phone) {
+//     const existingPopulationPhone = await populationModel.findOne({ phone });
+//     if (existingPopulationPhone) {
+//       errorMessages.push("This phone number already exists in the database");
+//     }
+//   }
+
+//   // If there are any error messages, return them
+//   if (errorMessages.length > 0) {
+//     return res.status(409).json({ message: errorMessages });
+//   }
+
+//   const encryptedSequence = CryptoJS.AES.encrypt(req.body.DNA_sequence, encryptionKey).toString();
+//   // Create a new population entry
+//   const populationEntry = new populationModel({
+//     lab_id: req.user.lab_id,
+//     technical_id: req.user.id,
+//     DNA_sequence:encryptedSequence,
+//     name,
+//     address,
+//     national_id,
+//     phone,
+//     gender,
+//     birthdate,
+//     bloodType,
+//     status,
+//     description,
+//   });
+
+//   try {
+//     // Save the new population entry to the database
+//     const savedEntry = await populationEntry.save();
+
+//     // Respond with the saved entry
+//     res
+//       .status(201)
+//       .json({
+//         message: "Population entry added successfully",
+//         person: savedEntry,
+//       });
+//   } catch (error) {
+//     next(error);
+//   }
+// };
+
+////////////////////////add population with encryption and file upload//////////////////////////
+export const addPopulation = async (req, res, next) => {
+  const {
+    name,
+    address,
+    national_id,
+    phone,
+    gender,
+    birthdate,
+    bloodType,
+    status,
+    description,
+  } = req.body;
+
+  // Array to store error messages
+  const errorMessages = [];
+
+  // Retrieve all existing entries with a non-null DNA sequence
+  const existingEntries = await populationModel.find({
+    DNA_sequence: { $ne: null, $exists: true },
+  });
+
+  // Check if any existing DNA sequence matches the entered DNA sequence
+  const isDuplicateDNA = existingEntries.some((existingEntry) => {
+    const decryptedSequence = CryptoJS.AES.decrypt(existingEntry.DNA_sequence, encryptionKey).toString(CryptoJS.enc.Utf8);
+    return decryptedSequence === req.body.DNA_sequence;
+  });
+
+  if (isDuplicateDNA) {
+    errorMessages.push("DNA sequence already exists in the database");
+  }
+
+  if (national_id) {
+    const existingPopulationNational_id = await populationModel.findOne({
+      national_id,
+    });
+    if (existingPopulationNational_id) {
+      errorMessages.push("This National ID already exists in the database");
+    }
+  }
+
+  if (phone) {
+    const existingPopulationPhone = await populationModel.findOne({ phone });
+    if (existingPopulationPhone) {
+      errorMessages.push("This phone number already exists in the database");
+    }
+  }
+
+  // If there are any error messages, return them
+  if (errorMessages.length > 0) {
+    return res.status(409).json({ message: errorMessages });
+  }
+
+  // Encrypt the DNA sequence before storing
+  const encryptedSequence = CryptoJS.AES.encrypt(req.body.DNA_sequence, encryptionKey).toString();
+
+  // Create a new population entry
+  const populationEntry = new populationModel({
+    lab_id: req.user.lab_id,
+    technical_id: req.user.id,
+    DNA_sequence: encryptedSequence,
+    name,
+    address,
+    national_id,
+    phone,
+    gender,
+    birthdate,
+    bloodType,
+    status,
+    description,
+  });
+
+  try {
+    // Save the new population entry to the database
+    const savedEntry = await populationEntry.save();
+
+    // Respond with the saved entry
+    res
+      .status(201)
+      .json({
+        message: "Population entry added successfully",
+        statusCode:201, 
+        person: savedEntry,
+      });
+  } catch (error) {
+    next(error);
+  }
+};
 /////////////////////update population with encryption and file upload//////////////////////////////
 
 
@@ -743,4 +693,56 @@ export const updatePopulation = async (req, res, next) => {
   return res
     .status(200)
     .json({ message: "Population record updated successfully",updated });
+};
+///////////////////////////search by dna with encryption and file upload/////////////
+export const identificationByDNA = async (req, res, next) => {
+  const { DNA_sequence } = req.body;
+
+  if (!DNA_sequence) {
+    return next(
+      new AppError("Please provide DNA sequence to be searched for", 404)
+    );
+  }
+
+  const existingEntries = await populationModel
+    .find({ DNA_sequence: { $ne: null, $exists: true } })
+    .select("-__v");
+
+  // Check if any existing DNA sequence matches the entered DNA sequence
+  const duplicateEntry = existingEntries.find((existingEntry) => {
+    const decryptedSequence = CryptoJS.AES.decrypt(
+      existingEntry.DNA_sequence,
+      encryptionKey
+    ).toString(CryptoJS.enc.Utf8);
+    return decryptedSequence === DNA_sequence;
+  });
+
+  if (!duplicateEntry) {
+    return next(
+      new AppError("No population found matching your search criteria", 404)
+    );
+  }
+
+  // Assuming role information is accessible via req.user.role
+  const { role } = req.user;
+
+  if (role === "admin") {
+    // Admin can access all data
+    const { DNA_sequence, ...personData } = duplicateEntry.toObject();
+    return res
+      .status(200)
+      .json({ message: "Population fetched successfully",statusCode:200, personData });
+  } else if (role === "technical") {
+    // Technical role excludes lab_id, technical_id, and DNA_sequence
+    const { lab_id, technical_id, DNA_sequence, ...personData } =
+      duplicateEntry.toObject();
+    return res
+      .status(200)
+      .json({ message: "Population fetched successfully",statusCode:200, personData });
+  } else {
+    // Other roles don't have access
+    return next(
+      new AppError("You don't have permission to access this data", 403)
+    );
+  }
 };
