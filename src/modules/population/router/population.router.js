@@ -12,8 +12,7 @@ router.get('/getAllPopulation',authenticate,autherize('admin'),asyncHandler(getA
 router.get('/identification',authenticate,autherize('admin','technical'),asyncHandler(identification))
 // router.post('/identificationByDNA',authenticate,autherize('admin','technical'),asyncHandler(identificationByDNA))
 // router.put('/updatePopulation/:id',authenticate,autherize('admin'),validate(updatePopulationSchema,updatePopulationQuery),asyncHandler(updatePopulation))
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 router.post('/addpopulation',authenticate,autherize('technical'),getTextFileUploadMiddleware(),validate(AddPopulationnSchema,AddPopulationnlQuery), asyncHandler(addPopulation));
 router.put('/updatePopulation/:id',authenticate,autherize('admin'),getTextFileUploadMiddleware(),validate(updatePopulationSchema,updatePopulationQuery), asyncHandler(updatePopulation));
 router.post('/identificationByDNA',authenticate,autherize('admin','technical'),getTextFileUploadMiddleware(),asyncHandler(identificationByDNA))
