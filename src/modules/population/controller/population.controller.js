@@ -172,7 +172,7 @@ export const getAllPopulation = async (req, res, next) => {
     return next(new AppError("No population found", 404));
   return res
     .status(200)
-    .json({ message: "Population fetched successfully", population });
+    .json({ message: "Population fetched successfully",statusCode:200,population });
 };
 
 //--------------------------------- search for population ---------------------------
@@ -692,7 +692,7 @@ export const updatePopulation = async (req, res, next) => {
 
   return res
     .status(200)
-    .json({ message: "Population record updated successfully",updated });
+    .json({ message: "Population record updated successfully",statusCode:200,updated });
 };
 ///////////////////////////search by dna with encryption and file upload/////////////
 export const identificationByDNA = async (req, res, next) => {
