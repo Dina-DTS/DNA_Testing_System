@@ -45,7 +45,8 @@ const populationSchema = new mongoose.Schema({
   status: {
     type: String, 
     enum: ['crime', 'disaster', 'missing','acknowledged'],
-    required:true
+    required:true,
+    lowercase:true
   },
   description: {
     type: String,
