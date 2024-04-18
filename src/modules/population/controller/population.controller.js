@@ -1005,7 +1005,7 @@ const IV = Buffer.from('0123456789abcdef'); // Fixed IV for AES encryption
             entry.DNA_sequence = decryptedSequence;
         });
 
-        return res.status(200).json({ message: 'Population fetched successfully', statusCode: 200, population });
+        return res.status(200).json({ population });
     } catch (error) {
         // Log the error for debugging purposes
         console.error('Error fetching population data:', error);
