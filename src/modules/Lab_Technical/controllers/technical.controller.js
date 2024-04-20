@@ -229,7 +229,7 @@ export const signInTechnical = asyncHandler(async (req, res) => {
     
   return res.status(200).json({
     message: 'Sign in successfully',
-    expiresIn: '12h',
+    expiresIn: '12',
     statusCode:200,
     newToken:token,
     technical:technicalPersonnel
