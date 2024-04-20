@@ -30,6 +30,10 @@ const labTechnicalSchema = new mongoose.Schema({
     required: true,
     default:"technical"
   },
+  isLogout:{
+    type:Boolean,
+    default:false
+},
   admin_id: { type: mongoose.Schema.Types.ObjectId, ref: 'admin', required: true },
   lab_id: { type: mongoose.Schema.Types.ObjectId, ref: 'lab', required: true },
 

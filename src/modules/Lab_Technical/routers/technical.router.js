@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { validate } from "../../../middlewares/validate.middleware.js";
 import { autherize,authenticate } from "../../../middlewares/auth.middleware.js";
-import { addTechnical, deletetechnical, getAllTechnicals, searchTechnical, signInTechnical, updatetechnical } from "../controllers/technical.controller.js";
+import { addTechnical, deletetechnical, getAllTechnicals, logout, searchTechnical, signInTechnical, updatetechnical } from "../controllers/technical.controller.js";
 import { addtechnicalBodySchema,addtechnicalQuerySchema, deletetechnicalQuery, deletetechnicalSchema, signintechnicalQuery, signintechnicalSchema, updatetechnicalQuery, updatetechnicalSchema } from "../validations/technical.validation.js";
 
 
@@ -13,5 +13,7 @@ router.delete("/deletetechnical/:id",authenticate,autherize('admin'),validate(de
 router.get("/getTechnicals",authenticate,autherize('admin'),getAllTechnicals)
 router.get("/getTechnical",authenticate,autherize('admin'),searchTechnical)
 router.post("/signintechnical",validate(signintechnicalSchema,signintechnicalQuery),signInTechnical)
+router.put('/logout',authenticate,autherize('technical'),logout)
+
 
 export default router

@@ -224,11 +224,23 @@ export const signInTechnical = asyncHandler(async (req, res) => {
   // Generate JWT token
   const token = jwt.sign( { email: technicalPersonnel.email, id: technicalPersonnel._id, role: technicalPersonnel.role, lab_id:technicalPersonnel.lab_id },
     process.env.SECRET,{ expiresIn: '12h' });
-
+    technicalPersonnel.isLogout=false
+    await technicalPersonnel.save()
+    
   return res.status(200).json({
     message: 'Sign in successfully',
+    expiresIn: '12h',
     statusCode:200,
     newToken:token,
     technical:technicalPersonnel
   });
 });
+
+export const logout=async(req,res,next)=>{
+  const{id}=req.user
+  const techExist=await labTechnicalModel.findById(id)
+  if(!techExist) return next(new AppError('technical not found',404))
+  techExist.isLogout=true
+  await techExist.save()
+  return res.json({message:'logged out successfully'})
+}
