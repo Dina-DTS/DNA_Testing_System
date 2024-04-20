@@ -13,7 +13,7 @@ export const authenticate = (req, res, next) => {
     let tech =await labTechnicalModel.findById(decoded.id)
     if(!tech) return next(new AppError('technical not found',404))
 
-    if(tech.isLogout) return next(new AppError('please login again cause u r logged out',401))
+    if(tech.isLogout) return next(new AppError('please login again cause you are logged out now',401))
    
     req.user = decoded; // Attach admin ID to the request object
     next();
