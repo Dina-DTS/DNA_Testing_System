@@ -158,16 +158,16 @@ const encryptionKey = process.env.ENCRYPTION_KEY;
 //---------------------------------- get all population -----------------------------
 
 export const getAllPopulation = async (req, res, next) => {
-  const page = parseInt(req.query.page) || 1;
-  const limit = parseInt(req.query.limit) || 10;
-  const skip = (page - 1) * limit;
+  // const page = parseInt(req.query.page) || 1;
+  // const limit = parseInt(req.query.limit) || 10;
+  // const skip = (page - 1) * limit;
 
   // Assuming you're using Mongoose to interact with MongoDB
 
   let population = await populationModel
     .find()
-    .skip(skip)
-    .limit(limit)
+    // .skip(skip)
+    // .limit(limit)
     .select("-__v");
 
   if (!population || population.length == 0)
