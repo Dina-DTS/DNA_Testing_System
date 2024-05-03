@@ -235,6 +235,7 @@ export const signInTechnical = asyncHandler(async (req, res) => {
     technical:technicalPersonnel
   });
 });
+///////////////////////////////////// logout///////////////////////////////
 
 export const logout=async(req,res,next)=>{
   const{id}=req.user
@@ -242,5 +243,5 @@ export const logout=async(req,res,next)=>{
   if(!techExist) return next(new AppError('technical not found',404))
   techExist.isLogout=true
   await techExist.save()
-  return res.json({message:'logged out successfully'})
+  return res.json({message:'logged out successfully',statusCode:200})
 }
