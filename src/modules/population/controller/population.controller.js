@@ -756,10 +756,6 @@ export const identification = async (req, res, next) => {
 
 ////////////////////////////////////////add population final ان شاء الله/////////////////////////////////////
 
-
-
-
-
 // Encryption key for AES encryption (replace 'ENCRYPTION_KEY' with your actual encryption key)
 const ENCRYPTION_KEYy = crypto.createHash('sha256').update(process.env.ENCRYPTION_KEY).digest('base64').substr(0, 32);
 
@@ -1004,7 +1000,7 @@ const IV = Buffer.from('0123456789abcdef'); // Fixed IV for AES encryption
             decryptedSequence += decipher.final('utf8');
             entry.DNA_sequence = decryptedSequence;
         });
-
+//new code
         return res.status(200).json({ population });
     } catch (error) {
         // Log the error for debugging purposes
