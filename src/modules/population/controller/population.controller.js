@@ -981,31 +981,34 @@ const IV = Buffer.from('0123456789abcdef');
 ////////////////////////// eisa api /////////////////////////////////
 
 export const getAllPopulationDecrypted = async (req, res, next) => {
-    try {
-      // Encryption and decryption key (replace 'ENCRYPTION_KEY' with your actual key)
-      const ENCRYPTION_KEYy = crypto.createHash('sha256').update(process.env.ENCRYPTION_KEY).digest('base64').substr(0, 32);
+  try {
+    // Ensure encryption key is exactly 32 bytes
+    const ENCRYPTION_KEY = crypto.createHash('sha256').update(process.env.ENCRYPTION_KEY).digest('base64').substr(0, 32);
+    const IV = Buffer.from('0123456789abcdef');
 
-const IV = Buffer.from('0123456789abcdef'); // Fixed IV for AES encryption
-        // Query the database to find population data
-        let population = await populationModel.find({}, '-__v');
+    // Fetch all population data
+    let population = await populationModel.find({}, '-__v');
 
-        if (!population || population.length === 0) {
-            return next(new AppError('No population found', 404));
-        }
-
-        // Decrypt the DNA sequence for each population entry
-        population.forEach((entry) => {
-            const decipher = crypto.createDecipheriv('aes-256-cbc', Buffer.from(ENCRYPTION_KEYy), IV);
-            let decryptedSequence = decipher.update(entry.DNA_sequence, 'hex', 'utf8');
-            decryptedSequence += decipher.final('utf8');
-            entry.DNA_sequence = decryptedSequence;
-        });
-//new code
-        return res.status(200).json({ population });
-    } catch (error) {
-        // Log the error for debugging purposes
-        console.error('Error fetching population data:', error);
-        // Pass the error to the error handling middleware
-        return next(new AppError('Error fetching population data', 500));
+    if (!population || population.length === 0) {
+      return next(new AppError('No population found', 404));
     }
+
+    // Decrypt the DNA sequence for each population entry
+    population.forEach((entry) => {
+      try {
+        const decipher = crypto.createDecipheriv('aes-256-cbc', Buffer.from(ENCRYPTION_KEY), IV);
+        let decryptedSequence = decipher.update(entry.DNA_sequence, 'hex', 'utf8');
+        decryptedSequence += decipher.final('utf8');
+        entry.DNA_sequence = decryptedSequence;
+      } catch (decryptionError) {
+        console.error(`Error decrypting DNA sequence for entry ID ${entry._id}:, decryptionError.message`);
+        entry.DNA_sequence = 'Decryption failed';
+      }
+    });
+
+    res.status(200).json({ message: 'Population fetched successfully', statusCode: 200, population });
+  } catch (error) {
+    console.error('Error fetching population data:', error);
+    next(new AppError('Error fetching population data', 500));
+  }
 };
