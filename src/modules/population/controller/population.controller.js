@@ -8,7 +8,7 @@ dotenv.config();
 
 const encryptionKey = process.env.ENCRYPTION_KEY;
 
-//------------------------- add population -------------------------
+//------------------------- add population ---------------------
 
 // export const addPopulation = async (req, res, next) => {
 //     const { DNA_sequence, name, address, national_id, phone, gender, birthdate, bloodType, status, description } = req.body;
