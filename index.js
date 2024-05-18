@@ -12,6 +12,7 @@ import technicalrouter from "./src/modules/Lab_Technical/routers/technical.route
 import { globalErrorHandling } from "./src/middlewares/asyncHandler.js";
 import { AppError } from "./utilies/error.handler.js";
 import populationrouter from "./src/modules/population/router/population.router.js"; 
+import { extendTimeoutMiddleware } from "./src/middlewares/expandTimeout.middleware.js";
 
 
 
@@ -25,11 +26,11 @@ app.use(express.json({ limit: '10mb' }));
 
 // Increase the limit for URL-encoded payloads
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
-
+app.use(extendTimeoutMiddleware)
 app.use(adminrouter);
 app.use(labrouter);
 app.use(technicalrouter);
-app.use(populationrouter)
+app.use('/api',populationrouter)
 
 
 app.use("*", (req, res, next) => {
