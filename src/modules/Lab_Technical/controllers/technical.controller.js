@@ -172,7 +172,7 @@ export const getAllTechnicals =asyncHandler( async (req, res, next) => {
 
                                            //////  5- Search For Technical //////
 
-export const searchTechnical = asyncHandler(async (req, res) => {
+export const searchTechnical = asyncHandler(async (req, res, next) => {
   const { email,phone,nationalId,lab_id,username } = req.query;
   if (!email && !nationalId && !phone && !lab_id &&!username) {
     return next(new AppError("Please provide data to be searched for", 404));

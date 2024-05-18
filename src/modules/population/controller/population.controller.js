@@ -821,21 +821,121 @@ export const adddPopulation = async (req, res, next) => {
     res.status(201).json({ message: 'Population entry added successfully',statusCode:201, person: savedEntry });
 };
 ////////////////////////////////////// test final update////////////////////////////////
+// export const updatePopulation = async (req, res, next) => {
+// const ENCRYPTION_KEYy = crypto.createHash('sha256').update(process.env.ENCRYPTION_KEY).digest('base64').substr(0, 32);
+// const IV = Buffer.from('0123456789abcdef');
+
+//   const {
+//     name,
+//     address,
+//     national_id,
+//     phone,
+//     gender,
+//     birthdate,
+//     bloodType,
+//     status,
+//     description,
+//     DNA_sequence
+//   } = req.body;
+//   const { id } = req.params;
+
+//   // Array to store error messages
+//   const errorMessages = [];
+
+//   if (
+//     !name &&
+//     !address &&
+//     !national_id &&
+//     !phone &&
+//     !gender &&
+//     !birthdate &&
+//     !bloodType &&
+//     !status &&
+//     !description &&
+//     !DNA_sequence
+//   ) {
+//     errorMessages.push("Please provide data to be updated");
+//   }
+
+//   // Check if the person with the provided ID exists
+//   let person;
+//   try {
+//     person = await populationModel.findById(id);
+//   } catch (error) {
+//     return next(new AppError("Error finding population record", 500));
+//   }
+
+//   if (!person) {
+//     errorMessages.push("Person with the provided ID is not found");
+//   }
+
+//   // If there are any error messages, return them
+//   if (errorMessages.length > 0) {
+//     return next(new AppError(errorMessages.join(", "), 404));
+//   }
+
+//   // Validate and update fields if provided
+//   const updatedFields = {};
+//   if (name) updatedFields.name = name;
+//   if (address) updatedFields.address = address;
+//   if (national_id) updatedFields.national_id = national_id;
+//   if (phone) updatedFields.phone = phone;
+//   if (gender) updatedFields.gender = gender;
+//   if (birthdate) updatedFields.birthdate = birthdate;
+//   if (bloodType) updatedFields.bloodType = bloodType;
+//   if (status) updatedFields.status = status;
+//   if (description) updatedFields.description = description;
+
+//   if (DNA_sequence && DNA_sequence !== person.DNA_sequence) {
+//     // Encrypt the DNA sequence before storing
+//     const cipher = crypto.createCipheriv('aes-256-cbc', Buffer.from(ENCRYPTION_KEYy), IV);
+//     let encryptedSequence = cipher.update(DNA_sequence, 'utf8', 'hex');
+//     encryptedSequence += cipher.final('hex');
+//     updatedFields.DNA_sequence = encryptedSequence;
+//   }
+
+//   // If there are any error messages, return them
+//   if (errorMessages.length > 0) {
+//     return next(new AppError(errorMessages.join(", "), 409));
+//   }
+
+//   let updated;
+//   try {
+//     updated = await populationModel
+//       .findByIdAndUpdate(
+//         id,
+//         updatedFields,
+//         { new: true }
+//       )
+//       .select("-__v");
+//   } catch (error) {
+//     return next(new AppError("Error updating population record", 500));
+//   }
+
+//   // Check if updated is null (no document found with the provided ID)
+//   if (!updated) {
+//     return next(new AppError(`Person with the provided ID isn't found`, 404));
+//   }
+
+//   return res
+//     .status(200)
+//     .json({ message: "Population record updated successfully",statusCode:200,updated });
+// };
 export const updatePopulation = async (req, res, next) => {
-const ENCRYPTION_KEYy = crypto.createHash('sha256').update(process.env.ENCRYPTION_KEY).digest('base64').substr(0, 32);
-const IV = Buffer.from('0123456789abcdef');
+  const ENCRYPTION_KEYy = crypto.createHash('sha256').update(process.env.ENCRYPTION_KEY).digest('base64').substr(0, 32);
+  const IV = Buffer.from('0123456789abcdef');
 
   const {
-    name,
-    address,
-    national_id,
-    phone,
-    gender,
-    birthdate,
-    bloodType,
-    status,
-    description,
-    DNA_sequence
+      name,
+      address,
+      national_id,
+      phone,
+      gender,
+      birthdate,
+      bloodType,
+      status,
+      description,
+      DNA_sequence
   } = req.body;
   const { id } = req.params;
 
@@ -843,35 +943,50 @@ const IV = Buffer.from('0123456789abcdef');
   const errorMessages = [];
 
   if (
-    !name &&
-    !address &&
-    !national_id &&
-    !phone &&
-    !gender &&
-    !birthdate &&
-    !bloodType &&
-    !status &&
-    !description &&
-    !DNA_sequence
+      !name &&
+      !address &&
+      !national_id &&
+      !phone &&
+      !gender &&
+      !birthdate &&
+      !bloodType &&
+      !status &&
+      !description &&
+      !DNA_sequence
   ) {
-    errorMessages.push("Please provide data to be updated");
+      errorMessages.push("Please provide data to be updated");
   }
 
   // Check if the person with the provided ID exists
   let person;
   try {
-    person = await populationModel.findById(id);
+      person = await populationModel.findById(id);
   } catch (error) {
-    return next(new AppError("Error finding population record", 500));
+      return next(new AppError("Error finding population record", 500));
   }
 
   if (!person) {
-    errorMessages.push("Person with the provided ID is not found");
+      errorMessages.push("Person with the provided ID is not found");
+  }
+
+  // Check if the provided phone, national_id, or DNA_sequence already exist for other persons
+  if (phone && phone !== person.phone) {
+      const existingPhone = await populationModel.findOne({ phone });
+      if (existingPhone) {
+          errorMessages.push('This phone number already exists for another person');
+      }
+  }
+
+  if (national_id && national_id !== person.national_id) {
+      const existingNationalId = await populationModel.findOne({ national_id });
+      if (existingNationalId) {
+          errorMessages.push('This National ID already exists for another person');
+      }
   }
 
   // If there are any error messages, return them
   if (errorMessages.length > 0) {
-    return next(new AppError(errorMessages.join(", "), 404));
+      return next(new AppError(errorMessages.join(", "), 404));
   }
 
   // Validate and update fields if provided
@@ -887,40 +1002,49 @@ const IV = Buffer.from('0123456789abcdef');
   if (description) updatedFields.description = description;
 
   if (DNA_sequence && DNA_sequence !== person.DNA_sequence) {
-    // Encrypt the DNA sequence before storing
-    const cipher = crypto.createCipheriv('aes-256-cbc', Buffer.from(ENCRYPTION_KEYy), IV);
-    let encryptedSequence = cipher.update(DNA_sequence, 'utf8', 'hex');
-    encryptedSequence += cipher.final('hex');
-    updatedFields.DNA_sequence = encryptedSequence;
+      // Encrypt the provided DNA sequence for comparison
+      const cipher = crypto.createCipheriv('aes-256-cbc', Buffer.from(ENCRYPTION_KEYy), IV);
+      let encryptedSequence = cipher.update(DNA_sequence, 'utf8', 'hex');
+      encryptedSequence += cipher.final('hex');
+
+      // Check if the encrypted DNA sequence already exists for another person
+      const existingDNASequence = await populationModel.findOne({ DNA_sequence: encryptedSequence });
+      if (existingDNASequence) {
+          errorMessages.push('This DNA sequence already exist');
+      } else {
+          // Update the DNA_sequence only if it's unique
+          updatedFields.DNA_sequence = encryptedSequence;
+      }
   }
 
   // If there are any error messages, return them
   if (errorMessages.length > 0) {
-    return next(new AppError(errorMessages.join(", "), 409));
+      return next(new AppError(errorMessages.join(", "), 409));
   }
 
   let updated;
   try {
-    updated = await populationModel
-      .findByIdAndUpdate(
-        id,
-        updatedFields,
-        { new: true }
-      )
-      .select("-__v");
+      updated = await populationModel
+          .findByIdAndUpdate(
+              id,
+              updatedFields,
+              { new: true }
+          )
+          .select("-__v");
   } catch (error) {
-    return next(new AppError("Error updating population record", 500));
+      return next(new AppError("Error updating population record", 500));
   }
 
   // Check if updated is null (no document found with the provided ID)
   if (!updated) {
-    return next(new AppError(`Person with the provided ID isn't found`, 404));
+      return next(new AppError(`Person with the provided ID isn't found`, 404));
   }
 
   return res
-    .status(200)
-    .json({ message: "Population record updated successfully",statusCode:200,updated });
+      .status(200)
+      .json({ message: "Population record updated successfully", statusCode: 200, updated });
 };
+
 
 ////////////////////////// final search by dna ///////////////////////////////////
 export const identificationByDNA = async (req, res, next) => {
